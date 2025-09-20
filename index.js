@@ -32,32 +32,37 @@ app.get("/", function (req, res) {
 
 app.get("/api/:date?", (request, response) => {
   const { date } = request.params;
-  let dateObj;
-  if (!date) {
-    dateObj = new Date();
-    console.log(dateObj);
-  } else {
-    if (!isNaN(date)) {
-      dateObj = new Date(Number(date));
+  try {
+    let dateObj;
+    if (!date) {
+      dateObj = new Date();
       console.log(dateObj);
     } else {
-      dateObj = new Date(date);
-      console.log(dateObj);
+      if (!isNaN(date)) {
+        dateObj = new Date(Number(date));
+        console.log(dateObj);
+      } else {
+        dateObj = new Date(date);
+        console.log(dateObj);
+      }
     }
-  }
 
-  if (isNaN(dateObj.getTime())) {
-    return response.json({ error: "Invalid Date" });
-  } else {
-    console.log(dateObj);
-    return response.json({
-      unix: dateObj.getTime(),
-      utc: dateObj.toUTCString(),
-    });
+    if (isNaN(dateObj.getTime())) {
+      return response.json({ error: "Invalid Date" });
+    } else {
+      console.log(dateObj);
+      return response.json({
+        unix: dateObj.getTime(),
+        utc: dateObj.toUTCString(),
+      });
+    }
+  } catch (error) {
+    console.log(error.message);
+    return response.status(500).json({ message: "Internal server error!" });
   }
 });
 
 // Listen on port set in environment variable or default to 3000
-var listener = app.listen(process.env.PORT || 3000, function () {
+const listener = app.listen(process.env.PORT || 3000, function () {
   console.log("Your app is listening on port " + listener.address().port);
 });
